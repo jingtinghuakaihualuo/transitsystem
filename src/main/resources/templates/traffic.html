@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>流量统计</title>
+    </head>
+    <script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/traffic.js}"></script>
+    <body>
+        <div align="center">
+            <span id="msg" name="msg"></span>
+        </div>
+        <div align="center">
+            <form action="#" th:action="@{/equipment/traffic}" method="post">
+                <label for="sno">设备号：</label>
+                <input id="sno" name="sno" th:value="${sno}">
+                <label for="mac">物理地址：</label>
+                <input id="mac" name="mac" th:value="${mac}">
+                <label for="minSize">最小流量(单位:kB)：</label>
+                <input id="minSize" name="minSize" th:value="${minSize}">
+                <label for="maxSize">最大流量(单位:kB)：</label>
+                <input id="maxSize" name="maxSize" th:value="${maxSize}">
+
+                <label for="startTime">开始时间：</label>
+                <input type="datetime-local" id="startTime" name="startTime">
+                <label for="endTime">截至时间：</label>
+                <input type="datetime-local" id="endTime" name="endTime">
+                <button id="search-btn" name="search-btn">搜索</button>
+
+<!--                <label for="startTime">开始时间：</label>-->
+<!--                <input type="datetime-local" id="startTime" name="startTime"-->
+<!--                       th:value="${#dates.format(${startTime},'yyyy-MM-dd HH:mm:ss')}">-->
+<!--                <label for="endTime">截至时间：</label>-->
+<!--                <input type="datetime-local" id="endTime" name="endTime"-->
+<!--                       th:value="${#dates.format(${endTime},'yyyy-MM-dd HH:mm:ss')}">-->
+<!--                <button id="search-btn" name="search-btn">搜索</button>-->
+            </form>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <a th:href="@{/equipment/import}">添加设备</a>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <a th:href="@{/equipment/info/list}">查看设备</a>
+            <table width="100%" border="1">
+
+                <tr align="center">
+                    <td width="15%">设备号</td>
+                    <td width="15%">物理地址</td>
+                    <td width="10%">总流量(单位:kB)</td>
+                    <td colspan="2" width="10%">操作</td>
+                </tr>
+                <tr align="center" th:each="list: ${pages.list}">
+                    <td th:text="${list.sno}"></td>
+                    <td th:text="${list.mac}"></td>
+                    <td th:text="${list.totalFlow}"></td>
+                    <td><a th:href="@{/equipment/delete2(sno=${list.sno}, mac=${list.mac})}">禁用</a></td>
+                </tr>
+            </table>
+        </div>
+        <div align="center">
+            <a th:unless="${pages.isFirstPage}"
+               th:href="@{/equipment/traffic(sno=${sno}, mac=${mac}, minsize=${minSize}, maxSize=${maxSize})}">首 页</a>
+            <a th:unless="${pages.isFirstPage}"
+               th:href="@{/equipment/traffic(offset=${pages.hasPreviousPage}?${pages.prePage}:1, sno=${sno}, mac=${mac}, minsize=${minSize}, maxSize=${maxSize})}">上一页</a>
+            <a th:unless="${pages.isLastPage}"
+               th:href="@{/equipment/traffic(offset=${pages.hasNextPage}?${pages.nextPage}:${pages.pages}, sno=${sno}, mac=${mac}, minsize=${minSize}, maxSize=${maxSize})}">下一页</a>
+            <a th:unless="${pages.isLastPage}"
+               th:href="@{/equipment/traffic(offset=${pages.pages}, sno=${sno}, mac=${mac}, minsize=${minSize}, maxSize=${maxSize})}">末 页</a>
+        </div>
+
+        <script type="text/javascript">
+
+        </script>
+    </body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>表单</title>
+    </head>
+    <script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/index.js}"></script>
+    <body>
+        <div align="center">
+            <span id="msg" name="msg"></span>
+        </div>
+        <div align="center">
+            <form action="#" th:action="@{/equipment/info/list}" method="post">
+                <label for="sno">设备号：</label>
+                <input id="sno" name="sno" th:value="${sno}">
+                <button id="search-btn" name="search-btn">搜索</button>
+            </form>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <a th:href="@{/equipment/import}">添加设备</a>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <a th:href="@{/equipment/traffic}">查看流量统计</a>
+            <table width="100%" border="1">
+
+                <tr align="center">
+                    <td width="10%">表id</td>
+                    <td width="15%">设备号</td>
+                    <td width="15%">物理地址</td>
+                    <td width="15%">长链接id</td>
+                    <td width="15%">状态</td>
+                    <td width="10%">导入时间</td>
+                    <td colspan="2" width="10%">操作</td>
+                </tr>
+                <tr align="center" th:each="list: ${pages.list}">
+                    <td th:text="${list.id}"></td>
+                    <td th:text="${list.sno}"></td>
+                    <td th:text="${list.mac}"></td>
+                    <td th:text="${list.tokenId}"></td>
+                    <td th:text="${list.status}==0 ? '导入' : (${list.status}==1 ? '连接' : (${list.status}==2 ? '断开' : (${list.status}==3 ? '禁用' : '其它')))"></td>
+                    <td th:text="${list.createTime}"></td>
+                    <td><a th:href="@{/equipment/delete(id=${list.id})}">禁用</a></td>
+                </tr>
+            </table>
+        </div>
+        <div align="center">
+            <a th:unless="${pages.isFirstPage}"
+               th:href="@{/equipment/info/list(sno=${sno})}">首 页</a>
+            <a th:unless="${pages.isFirstPage}"
+               th:href="@{/equipment/info/list(start=${pages.hasPreviousPage}?${pages.prePage}:1, sno=${sno})}">上一页</a>
+            <a th:unless="${pages.isLastPage}"
+               th:href="@{/equipment/info/list(start=${pages.hasNextPage}?${pages.nextPage}:${pages.pages}, sno=${sno})}">下一页</a>
+            <a th:unless="${pages.isLastPage}"
+               th:href="@{/equipment/info/list(start=${pages.pages}, sno=${sno})}">末 页</a>
+        </div>
+
+        <script type="text/javascript">
+
+        </script>
+    </body>
+</html>
