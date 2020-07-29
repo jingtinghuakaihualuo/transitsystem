@@ -107,6 +107,7 @@ public class EquipmnetManagerServiceImpl implements EquipmentManagerService {
         } else {
             criteria.andSnoEqualTo(request.getSno());
             criteria.andMacEqualTo(request.getMac());
+            criteria.andStatusLessThan(Byte.valueOf("3"));
             list = infoMapper.selectByExample(example);
         }
 
