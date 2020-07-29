@@ -5,7 +5,7 @@ import org.springframework.util.StringUtils;
 public class EquipmentInfoRequest {
     String sno;
     String mac;
-    Long tokenId;
+    String tokenId;
 
     public String getSno() {
         return sno;
@@ -23,16 +23,16 @@ public class EquipmentInfoRequest {
         this.mac = mac;
     }
 
-    public Long getTokenId() {
+    public String getTokenId() {
         return tokenId;
     }
 
-    public void setTokenId(Long tokenId) {
+    public void setTokenId(String tokenId) {
         this.tokenId = tokenId;
     }
 
     public boolean checkParam() {
-        if(getTokenId() != null || (!StringUtils.isEmpty(getSno()) && !StringUtils.isEmpty(getMac()))) {
+        if(!StringUtils.isEmpty(getTokenId()) || (!StringUtils.isEmpty(getSno()) && !StringUtils.isEmpty(getMac()))) {
             return false;
         }
         return true;

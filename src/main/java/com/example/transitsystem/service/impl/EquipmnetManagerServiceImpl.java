@@ -56,7 +56,7 @@ public class EquipmnetManagerServiceImpl implements EquipmentManagerService {
                 criteria.andMacEqualTo(request.getMac());
                 list = infoMapper.selectByExample(example);
             } else {
-                criteria.andTokenIdEqualTo(request.getTokenId());
+                criteria.andTokenIdEqualTo(Long.valueOf(request.getTokenId()));
                 list = infoMapper.selectByExample(example);
             }
 
@@ -134,6 +134,7 @@ public class EquipmnetManagerServiceImpl implements EquipmentManagerService {
         return gson.toJson(socketApiRespnose);
     }
 
+    @Override
     public Long updateToken(ClientSocket clientSocket, EquipmentInfo equipmentInfo) {
         if(equipmentInfo.getTokenId() == null || tokenMoreThanThreeDay(equipmentInfo)) {
             Long oldTokenId = equipmentInfo.getTokenId();
