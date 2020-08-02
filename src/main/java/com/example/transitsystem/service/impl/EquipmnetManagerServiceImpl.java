@@ -67,6 +67,9 @@ public class EquipmnetManagerServiceImpl implements EquipmentManagerService {
             result = new OpenApiResult(ResultEnum.SUCCESS);
             result.setData(list.get(0));
 
+        } catch (NumberFormatException e) {
+            log.error("EquipmnetManagerServiceImpl:getEquipmentInfo(), NumberFormatException={}", e);
+            return new OpenApiResult(ResultEnum.REQUESTPARAMERROR);
         } catch (Exception e) {
             log.error("EquipmnetManagerServiceImpl:getEquipmentInfo(), exception={}", e);
             return new OpenApiResult(ResultEnum.SYSTEMEXCEPTION);
@@ -124,7 +127,7 @@ public class EquipmnetManagerServiceImpl implements EquipmentManagerService {
 
         EquipmentInfo equipmentInfo = list.get(0);
         JsonObject retJsonObject = new JsonObject();
-        
+
         Long newTokenId = updateToken(clientSocket, equipmentInfo);
         retJsonObject.addProperty("tokenId", String.valueOf(newTokenId));
         SocketApiRespnose socketApiRespnose = new SocketApiRespnose(ResultEnum.SUCCESS, reqNo);

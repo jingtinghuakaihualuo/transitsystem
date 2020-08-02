@@ -33,9 +33,9 @@ public class EquipmentInfoRequest {
 
     public boolean checkParam() {
         if(!StringUtils.isEmpty(getTokenId()) || (!StringUtils.isEmpty(getSno()) && !StringUtils.isEmpty(getMac()))) {
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 
     @Override
