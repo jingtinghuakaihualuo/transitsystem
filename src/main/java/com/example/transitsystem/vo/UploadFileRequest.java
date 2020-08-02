@@ -6,6 +6,7 @@ public class UploadFileRequest {
     String sno;
     String mac;
     String name;
+    String headPicName;
     public String getSno() {
         return sno;
     }
@@ -28,6 +29,14 @@ public class UploadFileRequest {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getHeadPicName() {
+        return headPicName;
+    }
+
+    public void setHeadPicName(String headPicName) {
+        this.headPicName = headPicName;
     }
 
     public boolean checkParam() {

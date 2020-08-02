@@ -9,6 +9,7 @@ import com.example.transitsystem.service.ClientSocket;
 import com.example.transitsystem.utils.FileUtils;
 import com.example.transitsystem.utils.TimeStampUtil;
 import com.example.transitsystem.vo.UploadFileRequest;
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -32,6 +33,8 @@ public class UpLoadFileHandler implements Runnable{
     private EquipmentFlowMapper flowMapper;
 
     private  String filePath;
+
+    private Gson gson = new GsonBuilder().create();
 
     public UpLoadFileHandler(ClientSocket clientSocket,String filePath, String[] fileNames, UploadFileRequest param, EquipmentFlowMapper flowMapper) {
         this.clientSocket = clientSocket;
@@ -104,8 +107,9 @@ public class UpLoadFileHandler implements Runnable{
         try {
             for (int i = 0; i < fileNames.length - 1; i++) {
                 String fileRealName = fileNames[i].replace(fileNames[fileNames.length -1], "");
-                if (fileRealName.startsWith("head_")) {
+                if (fileRealName.equals(param.getHeadPicName())) {
                     sendJson.addProperty("name", param.getName());
+                    sendJson.addProperty("headPicName", param.getHeadPicName());
                     sendJson.addProperty("headPic", FileUtils.getFileByteArray(new FileInputStream(filePath + fileNames[i])));
                 } else {
                     JsonObject subFile = new JsonObject();
@@ -131,7 +135,7 @@ public class UpLoadFileHandler implements Runnable{
              }
         }
 
-        String retStr = new GsonBuilder().create().toJson(socketApiRespnose);
+        String retStr = gson.toJson(socketApiRespnose);
         log.info("################################组装返回数据时间测试endTime=" + System.currentTimeMillis()/1000);
         return retStr;
     }
