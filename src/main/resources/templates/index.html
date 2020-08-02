@@ -36,7 +36,7 @@
                     <td th:text="${list.sno}"></td>
                     <td th:text="${list.mac}"></td>
                     <td th:text="${list.tokenId}"></td>
-                    <td th:text="${list.status}==0 ? '导入' : (${list.status}==1 ? '连接' : (${list.status}==2 ? '断开' : (${list.status}==3 ? '禁用' : '其它')))"></td>
+                    <td th:text="${list.status}==0 ? '导入' : (${list.status}==1 ? '连接' : (${list.status}==2 ? '离线' : (${list.status}==3 ? '禁用' : '其它')))"></td>
                     <td th:text="${list.createTime}"></td>
                     <td><a th:href="@{/equipment/delete(id=${list.id})}">禁用</a></td>
                 </tr>

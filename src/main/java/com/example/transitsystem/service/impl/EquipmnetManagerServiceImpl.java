@@ -124,9 +124,9 @@ public class EquipmnetManagerServiceImpl implements EquipmentManagerService {
 
         EquipmentInfo equipmentInfo = list.get(0);
         JsonObject retJsonObject = new JsonObject();
-        retJsonObject.addProperty("tokenId", equipmentInfo.getTokenId());
+        
         Long newTokenId = updateToken(clientSocket, equipmentInfo);
-        retJsonObject.addProperty("tokenId", newTokenId);
+        retJsonObject.addProperty("tokenId", String.valueOf(newTokenId));
         SocketApiRespnose socketApiRespnose = new SocketApiRespnose(ResultEnum.SUCCESS, reqNo);
         socketApiRespnose.setData(retJsonObject);
         //修改状态
