@@ -54,6 +54,7 @@ public class ClientSocket implements Runnable {
         try {
             client.setSocket(socket);
             socket.setKeepAlive(true);
+            socket.setSoTimeout(180000);
             client.setInputStream(new DataInputStream(socket.getInputStream()));
             client.setOutputStream(new DataOutputStream(socket.getOutputStream()));
             return client;
@@ -215,7 +216,7 @@ public class ClientSocket implements Runnable {
 
         try {
             while (true) {
-                TimeUnit.SECONDS.sleep(15);
+                TimeUnit.SECONDS.sleep(2);
                 receive();
             }
         } catch (InterruptedException e) {
