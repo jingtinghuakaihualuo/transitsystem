@@ -75,8 +75,10 @@ public class ClientSocket implements Runnable {
      */
     public void send(String str) {
         try {
+                log.debug("send String ={}, socketClient={}", str, this.socket);
                 byte[] sendBytes = SocketPachageUtil.builderSendBytes(str);
                 outputStream.write(sendBytes);
+                outputStream.flush();
         } catch (IOException e) {
             log.error("发送数据异常，e={}", e.getMessage());
         }
@@ -90,6 +92,7 @@ public class ClientSocket implements Runnable {
     public void send(byte[] bytes) {
         try {
             outputStream.write(bytes);
+            outputStream.flush();
         } catch (IOException e) {
             log.error("发送数据异常，e={}", e.getMessage());
         }

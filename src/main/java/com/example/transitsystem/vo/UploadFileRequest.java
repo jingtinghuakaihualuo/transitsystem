@@ -52,6 +52,7 @@ public class UploadFileRequest {
                 "sno='" + sno + '\'' +
                 ", mac='" + mac + '\'' +
                 ", name='" + name + '\'' +
+                ", headPicName='" + headPicName + '\'' +
                 '}';
     }
 }

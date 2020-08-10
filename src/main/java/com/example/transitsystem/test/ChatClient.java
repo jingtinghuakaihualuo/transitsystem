@@ -1,27 +1,22 @@
 package com.example.transitsystem.test;
 
-import com.example.transitsystem.base.ResultEnum;
-import com.example.transitsystem.base.SocketApiRequest;
-import com.example.transitsystem.base.SocketApiRespnose;
+
 import com.example.transitsystem.utils.SocketPachageUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.util.Base64;
+import java.util.concurrent.TimeUnit;
 
 
 public class ChatClient {
+    private static Gson gson = new GsonBuilder().create();
+
     public static void main(String[] args) throws Exception {
-        Gson gson = new GsonBuilder().create();
-        String host = "127.0.0.1";
+
+        String host = "139.199.189.158";
+//        String host = "127.0.0.1";
         double a = 1.0;
         int port = 10086;
         // 与服务端建立连接
@@ -30,6 +25,9 @@ public class ChatClient {
         // 建立连接后获得输出流
         DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream());
         DataInputStream inputStream = new DataInputStream(socket.getInputStream());
+
+        startListen(outputStream, inputStream);
+
         String jsonStr = "{       \n" +
                 "        \"api\" : \"/register\",\n" +
                 "\t\"reqNo\" : 100,\n" +
@@ -40,68 +38,84 @@ public class ChatClient {
                 "\t}\n" +
                 "}";
 
+        String heartBeatStr = "{       \n" +
+                "        \"api\" : \"heartBeat\",\n" +
+                "\t\"reqNo\" : 100,\n" +
+                "\t\"reqDate\" : 1234567890,\n" +
+                "\t\"data\" : {\n" +
+                "\t}\n" +
+                "}";
+
         //生成包头，前四位为主题包长度
         byte[] sendBytes = SocketPachageUtil.builderSendBytes(jsonStr);
         outputStream.write(sendBytes);
         outputStream.flush();
 
-        byte[] head = new byte[4];
-        int index = 0;
-        byte[] bytes = new byte[1024];
-        StringBuilder sb = new StringBuilder();
-        int b = 0;
-        //先循环读头
-        while ((b = inputStream.read()) >= 0 ) {
-            if (index < SocketPachageUtil.HEADLENGTH -1 ) {
-                head[index] = (byte)b;
-                index++;
-            } else if (index == SocketPachageUtil.HEADLENGTH -1) {
-                head[index] = (byte)b;
-
-                //处理长度
-                int bodyLen = SocketPachageUtil.bytes2Int(head,true);
-                System.out.println("##############client : 主体包长度为 bodyLen=" + bodyLen);
-
-                byte[] body = new byte[bodyLen];
-                //循环读主体部分数据，直到读完已知长度为止
-                index = 0;//置为0，从新循环读主体数据
-                while (index + bytes.length < bodyLen) {
-                    inputStream.read(bytes);
-                    sb.append(new String(bytes, 0, bytes.length));
-                    index = index + bytes.length;
-                }
-                if (bodyLen - index > 0) {
-                    inputStream.read(bytes);
-                    sb.append(new String(bytes, 0, bodyLen - index));
-                }
-                //数据读取完毕   解析数据
-                System.out.println("############client:" + sb.toString());
-
-
-                try {
-                    //处理数据部分start
-                    //test return
-//                    String s = "{\"code\" : \"0000\", \"msg\" : \"success!\", \"respNo\" : 100}";
-                    SocketApiRequest request = gson.fromJson(sb.toString(),SocketApiRequest.class);
-                    SocketApiRespnose respnose = new SocketApiRespnose(ResultEnum.SUCCESS,request.getReqNo());
-                    String retStr = gson.toJson(respnose);
-                    outputStream.write(SocketPachageUtil.builderSendBytes(retStr));
-                } finally {
-                    //重置数据
-                    index = 0;
-                    sb.setLength(0);
-                }
-            }
+        while (true) {
+            sendBytes = SocketPachageUtil.builderSendBytes(jsonStr);
+            outputStream.write(sendBytes);
+            outputStream.flush();
+            TimeUnit.SECONDS.sleep(20);
         }
+
     }
 
-    private static void writeFile(String str) {
+    private static void startListen(OutputStream outputStream, InputStream inputStream) {
         Thread thread = new Thread(new Runnable() {
+
+
+
             @Override
             public void run() {
                 try {
-                    JsonObject jsonObject = new GsonBuilder().create().fromJson(str, JsonObject.class);
-                    Files.write(Paths.get("E:\\test\\tmp\\new\\aaa.txt"), Base64.getDecoder().decode(str.getBytes()), StandardOpenOption.CREATE);
+                    byte[] head = new byte[4];
+                    int index = 0;
+                    byte[] bytes = new byte[1024];
+                    StringBuilder sb = new StringBuilder();
+                    int b = 0;
+                    //先循环读头
+                    while ((b = inputStream.read()) >= 0) {
+                        if (index < SocketPachageUtil.HEADLENGTH - 1) {
+                            head[index] = (byte) b;
+                            index++;
+                        } else if (index == SocketPachageUtil.HEADLENGTH - 1) {
+                            head[index] = (byte) b;
+
+                            //处理长度
+                            int bodyLen = SocketPachageUtil.bytes2Int(head, true);
+                            System.out.println("##############client : 主体包长度为 bodyLen=" + bodyLen);
+
+                            byte[] body = new byte[bodyLen];
+                            //循环读主体部分数据，直到读完已知长度为止
+                            index = 0;//置为0，从新循环读主体数据
+                            while (index + bytes.length < bodyLen) {
+                                inputStream.read(bytes);
+                                sb.append(new String(bytes, 0, bytes.length));
+                                index = index + bytes.length;
+                            }
+                            if (bodyLen - index > 0) {
+                                inputStream.read(bytes);
+                                sb.append(new String(bytes, 0, bodyLen - index));
+                            }
+                            //数据读取完毕   解析数据
+                            System.out.println("############client:" + sb.toString());
+
+
+                            try {
+                                //处理数据部分start
+                                //test return
+//                    String s = "{\"code\" : \"0000\", \"msg\" : \"success!\", \"respNo\" : 100}";
+//                                SocketApiRequest request = gson.fromJson(sb.toString(), SocketApiRequest.class);
+//                                SocketApiRespnose respnose = new SocketApiRespnose(ResultEnum.SUCCESS, request.getReqNo()== null ? 100 : request.getReqNo());
+//                                String retStr = gson.toJson(respnose);
+//                                outputStream.write(SocketPachageUtil.builderSendBytes(retStr));
+                            } finally {
+                                //重置数据
+                                index = 0;
+                                sb.setLength(0);
+                            }
+                        }
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

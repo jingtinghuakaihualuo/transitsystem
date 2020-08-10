@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 /**
  * 文件上传
@@ -25,7 +26,15 @@ public class PicManagerController {
 
     @RequestMapping("/file/upload")
     @ResponseBody
-    public OpenApiResult fileUpload(@RequestParam("files") MultipartFile[] files, UploadFileRequest param) {
+    public OpenApiResult fileUpload(@RequestParam("files") MultipartFile[] files,
+                                    MultipartHttpServletRequest request) {
+
+        UploadFileRequest param = new UploadFileRequest();
+        param.setSno(request.getParameter("sno"));
+        param.setMac(request.getParameter("mac"));
+        param.setName(request.getParameter("name"));
+        param.setHeadPicName(request.getParameter("headPicName"));
+
         if (files == null || files.length <= 0) {
             return new OpenApiResult(ResultEnum.REQUESTPARAMERROR);
         }

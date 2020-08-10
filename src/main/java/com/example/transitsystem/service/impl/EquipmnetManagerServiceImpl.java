@@ -3,7 +3,6 @@ package com.example.transitsystem.service.impl;
 import com.example.transitsystem.base.OpenApiResult;
 import com.example.transitsystem.base.ResultEnum;
 import com.example.transitsystem.base.SocketApiRespnose;
-import com.example.transitsystem.bean.EquipmentFlow;
 import com.example.transitsystem.bean.EquipmentInfo;
 import com.example.transitsystem.bean.EquipmentInfoExample;
 import com.example.transitsystem.controller.DelongServerSocket;
@@ -26,7 +25,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
@@ -78,7 +77,7 @@ public class EquipmnetManagerServiceImpl implements EquipmentManagerService {
     }
 
     @Override
-    public List<NetworkStatisticalRespnose>  getNetworkTraffic(NetworkStatisticalRequest request) {
+    public List<NetworkStatisticalRespnose> getNetworkTraffic(NetworkStatisticalRequest request) {
 
         try {
             List<NetworkStatisticalRespnose> list = flowMapper.getNetworkStatistical(request);
@@ -119,7 +118,7 @@ public class EquipmnetManagerServiceImpl implements EquipmentManagerService {
             return gson.toJson(socketApiRespnose);
         }
 
-        if(list.size() > 1) {
+        if (list.size() > 1) {
             log.info("request param error.");
             SocketApiRespnose socketApiRespnose = new SocketApiRespnose(ResultEnum.DATABASEERROR, reqNo);
             return gson.toJson(socketApiRespnose);
@@ -128,6 +127,9 @@ public class EquipmnetManagerServiceImpl implements EquipmentManagerService {
         EquipmentInfo equipmentInfo = list.get(0);
         JsonObject retJsonObject = new JsonObject();
 
+
+        //考虑到设备已经注册
+        cleanOldClient(clientSocket, equipmentInfo);
         Long newTokenId = updateToken(clientSocket, equipmentInfo);
         retJsonObject.addProperty("tokenId", String.valueOf(newTokenId));
         SocketApiRespnose socketApiRespnose = new SocketApiRespnose(ResultEnum.SUCCESS, reqNo);
@@ -140,37 +142,50 @@ public class EquipmnetManagerServiceImpl implements EquipmentManagerService {
 
     @Override
     public Long updateToken(ClientSocket clientSocket, EquipmentInfo equipmentInfo) {
-        if(equipmentInfo.getTokenId() == null || tokenMoreThanThreeDay(equipmentInfo)) {
+
+        if (equipmentInfo.getTokenId() == null || tokenMoreThanThreeDay(equipmentInfo)) {
             Long oldTokenId = equipmentInfo.getTokenId();
             String newTokenId = String.valueOf(System.currentTimeMillis()).substring(4, 10) + autoGenericCode(String.valueOf(equipmentInfo.getId()), 6);
             equipmentInfo.setTokenId(Long.valueOf(newTokenId));
             equipmentInfo.setUpdateTime(TimeStampUtil.getCurentTimeStamp10());
-            if(oldTokenId == null) {
+            if (oldTokenId == null) {
                 equipmentInfo.setStatus(Byte.valueOf("1"));
             }
             infoMapper.updateByPrimaryKey(equipmentInfo);
 
             //更新
-            if (oldTokenId != null){
-                DelongServerSocket.tokenMappingclient.remove(oldTokenId, clientSocket);
+            if (oldTokenId != null) {
+                DelongServerSocket.tokenMappingclient.remove(oldTokenId);
             }
             DelongServerSocket.tokenMappingclient.put(Long.valueOf(newTokenId), clientSocket);
             DelongServerSocket.clientMappingToken.put(clientSocket, Long.valueOf(newTokenId));
             return Long.valueOf(newTokenId);
-        } else if (!DelongServerSocket.tokenMappingclient.containsKey(Long.valueOf(equipmentInfo.getTokenId()))
-                && !DelongServerSocket.clientMappingToken.containsKey(clientSocket)) {
-            DelongServerSocket.tokenMappingclient.put(Long.valueOf(equipmentInfo.getTokenId()), clientSocket);
-            DelongServerSocket.clientMappingToken.put(clientSocket, Long.valueOf(equipmentInfo.getTokenId()));
         }
 
         return equipmentInfo.getTokenId();
+    }
+
+    private void cleanOldClient(ClientSocket clientSocket, EquipmentInfo equipmentInfo) {
+        ClientSocket oldSocketClient = DelongServerSocket.tokenMappingclient.get(Long.valueOf(equipmentInfo.getTokenId()));
+
+        if (oldSocketClient != null && !oldSocketClient.equals(clientSocket)) {
+            try {
+                oldSocketClient.logout();
+            } catch (IOException e) {
+                log.error("clean time out socket client error,e={}", e);
+            }
+            DelongServerSocket.clientMappingToken.remove(oldSocketClient);
+        }
+
+        DelongServerSocket.tokenMappingclient.put(Long.valueOf(equipmentInfo.getTokenId()), clientSocket);
+        DelongServerSocket.clientMappingToken.put(clientSocket, Long.valueOf(equipmentInfo.getTokenId()));
     }
 
     @Override
     public List<EquipmentInfo> getEquipmentInfoList(String sno) {
         EquipmentInfoExample example = new EquipmentInfoExample();
         EquipmentInfoExample.Criteria criteria = example.createCriteria();
-        if(sno != null) {
+        if (sno != null) {
             criteria.andSnoEqualTo(sno);
         }
         example.setOrderByClause("id desc");
@@ -179,6 +194,7 @@ public class EquipmnetManagerServiceImpl implements EquipmentManagerService {
     }
 
     @Override
+    @Transactional
     public String EquipmentBatchImport(MultipartFile file) {
 
         try {
@@ -186,8 +202,8 @@ public class EquipmnetManagerServiceImpl implements EquipmentManagerService {
             BufferedReader bf = new BufferedReader(reader);
             String line;
             int i = 0;
-            while((line = bf.readLine()) != null) {
-                if(i == 0) {
+            while ((line = bf.readLine()) != null) {
+                if (i == 0) {
                     i++;
                     continue;
                 }
@@ -200,7 +216,7 @@ public class EquipmnetManagerServiceImpl implements EquipmentManagerService {
 
                 List<EquipmentInfo> list = infoMapper.selectByExample(example);
                 //数据已经存在
-                if(list.size() > 0 ) {
+                if (list.size() > 0) {
                     log.error("sno=" + info[0] + "mac=" + info[1] + "数据已经存在，导入失败");
                     return "sno=" + info[0] + "mac=" + info[1] + "数据已经存在，导入失败";
                 } else {
@@ -269,7 +285,8 @@ public class EquipmnetManagerServiceImpl implements EquipmentManagerService {
 
     private boolean tokenMoreThanThreeDay(EquipmentInfo equipmentInfo) {
         long currTime = System.currentTimeMillis();
-        if(currTime - (equipmentInfo.getUpdateTime() * 1000) > 3 * 24 * 60 * 60 * 1000) {
+        if (currTime - (equipmentInfo.getUpdateTime() * 1000) > 3 * 24 * 60 * 60 * 1000) {
+            log.info("token time out...");
             return true;
         }
         return false;
@@ -277,6 +294,7 @@ public class EquipmnetManagerServiceImpl implements EquipmentManagerService {
 
     /**
      * 不够位数的在前面补0，保留num的长度位数字
+     *
      * @param code
      * @return
      */

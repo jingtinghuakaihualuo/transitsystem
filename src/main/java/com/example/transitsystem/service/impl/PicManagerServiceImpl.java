@@ -140,20 +140,20 @@ public class PicManagerServiceImpl implements PicManagerService {
 
         clientSocket.send(sendStr);
         //等待响应
-        SocketApiRespnose socketApiRespnose = new SocketApiRespnose();
-        clientSocket.getMessage().put(reqNo, socketApiRespnose);
-
-        synchronized (socketApiRespnose) {
-            try {
-                socketApiRespnose.wait(10000);
-            } catch (InterruptedException e) {
-                log.error("wait error, e={}", e);
-            }
-        }
-
-        if (socketApiRespnose.equals(clientSocket.getMessage().get(reqNo))) {
-            return new OpenApiResult(ResultEnum.RESPONSETIMEOUT, reqNo);
-        }
+//        SocketApiRespnose socketApiRespnose = new SocketApiRespnose();
+//        clientSocket.getMessage().put(reqNo, socketApiRespnose);
+//
+//        synchronized (socketApiRespnose) {
+//            try {
+//                socketApiRespnose.wait(10000);
+//            } catch (InterruptedException e) {
+//                log.error("wait error, e={}", e);
+//            }
+//        }
+//
+//        if (socketApiRespnose.equals(clientSocket.getMessage().get(reqNo))) {
+//            return new OpenApiResult(ResultEnum.RESPONSETIMEOUT, reqNo);
+//        }
 
         return new OpenApiResult(ResultEnum.SUCCESS);
     }
@@ -190,15 +190,16 @@ public class PicManagerServiceImpl implements PicManagerService {
         JsonObject sendJson = new JsonObject();
         JsonArray fileArray = new JsonArray();
 
-        for (int i = 0; i < fileNames.length - 1; i++) {
+        for (int i = 0; i < fileNames.length ; i++) {
+            log.debug("fileName[i] = {}, headPicName={}, fileName == headPicName ={}", fileNames[i], param.getHeadPicName(), fileNames[i].equals(param.getHeadPicName()));
             if (fileNames[i] != null && !"".equals(fileNames[i])) {
                 String fileRealName = fileNames[i];
                 if (fileRealName.equals(param.getHeadPicName())) {
                     sendJson.addProperty("name", param.getName());
                     sendJson.addProperty("headPicName", param.getHeadPicName());
-                } else {
-                    fileArray.add(fileNames[i]);
                 }
+
+                fileArray.add(fileNames[i]);
             }
         }
         sendJson.add("fileNames", fileArray);
