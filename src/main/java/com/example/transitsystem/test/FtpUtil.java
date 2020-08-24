@@ -44,7 +44,8 @@ public class FtpUtil {
         List<String> list = new ArrayList<String>();
         String str = "";
         InputStream is = null;
-        FileOutputStream fos = new FileOutputStream(new File("E:\\test\\tmp\\rtl8188eu-master.zip"));
+//        FileOutputStream fos = new FileOutputStream(new File("E:\\test\\tmp\\rtl8188eu-master.zip"));
+        FileOutputStream fos = new FileOutputStream(new File("/home/yao/test.txt"));
         BufferedOutputStream bos = new BufferedOutputStream(fos);
         BufferedInputStream bis = null;
         byte[] bytes = new byte[1024 * 100];
@@ -72,8 +73,8 @@ public class FtpUtil {
     }
 
     public static void main(String[] args) throws Exception {
-        FtpClient ftp = connectFTP("139.199.189.158",21,"uftp","123456");
-        List<String> list = download("/home/uftp/rtl8188eu-master.zip",ftp);
+        FtpClient ftp = connectFTP("120.79.11.80",21,"uftp","123456");
+        List<String> list = download("/home/uftp/test.txt",ftp);
         for(int i=0;i<list.size();i++){
             System.out.println("list "+ i + " :"+list.get(i));
         }

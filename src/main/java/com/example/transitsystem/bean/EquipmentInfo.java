@@ -15,6 +15,8 @@ public class EquipmentInfo {
 
     private Long updateTime;
 
+    private String name;
+
     public Integer getId() {
         return id;
     }
@@ -69,5 +71,13 @@ public class EquipmentInfo {
 
     public void setUpdateTime(Long updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name == null ? null : name.trim();
     }
 }

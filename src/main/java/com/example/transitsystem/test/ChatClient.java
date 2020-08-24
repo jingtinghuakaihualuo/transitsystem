@@ -15,7 +15,7 @@ public class ChatClient {
 
     public static void main(String[] args) throws Exception {
 
-        String host = "139.199.189.158";
+        String host = "120.79.11.80";
 //        String host = "127.0.0.1";
         double a = 1.0;
         int port = 10086;
@@ -33,8 +33,8 @@ public class ChatClient {
                 "\t\"reqNo\" : 100,\n" +
                 "\t\"reqDate\" : 1234567890,\n" +
                 "\t\"data\" : {\n" +
-                "\t\t\"sno\" : \"123456789\",\n" +
-                "\t\t\"mac\" : \"AA-BB-CC-DD\"\n" +
+                "\t\t\"sno\" : \"1110000103111203051007\",\n" +
+                "\t\t\"mac\" : \"c4:3a:35:f8:06:98\"\n" +
                 "\t}\n" +
                 "}";
 
@@ -52,7 +52,7 @@ public class ChatClient {
         outputStream.flush();
 
         while (true) {
-            sendBytes = SocketPachageUtil.builderSendBytes(jsonStr);
+            sendBytes = SocketPachageUtil.builderSendBytes(heartBeatStr);
             outputStream.write(sendBytes);
             outputStream.flush();
             TimeUnit.SECONDS.sleep(20);

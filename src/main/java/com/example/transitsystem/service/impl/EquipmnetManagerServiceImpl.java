@@ -166,6 +166,9 @@ public class EquipmnetManagerServiceImpl implements EquipmentManagerService {
     }
 
     private void cleanOldClient(ClientSocket clientSocket, EquipmentInfo equipmentInfo) {
+        if (equipmentInfo.getTokenId() == null) {
+            return;
+        }
         ClientSocket oldSocketClient = DelongServerSocket.tokenMappingclient.get(Long.valueOf(equipmentInfo.getTokenId()));
 
         if (oldSocketClient != null && !oldSocketClient.equals(clientSocket)) {
@@ -217,12 +220,13 @@ public class EquipmnetManagerServiceImpl implements EquipmentManagerService {
                 List<EquipmentInfo> list = infoMapper.selectByExample(example);
                 //数据已经存在
                 if (list.size() > 0) {
-                    log.error("sno=" + info[0] + "mac=" + info[1] + "数据已经存在，导入失败");
-                    return "sno=" + info[0] + "mac=" + info[1] + "数据已经存在，导入失败";
+                    log.error("sno=" + info[0] + "mac=" + info[1] + "name=" + info[2] + "数据已经存在，导入失败");
+                    return "sno=" + info[0] + "mac=" + info[1] + "name" + info[2] + "数据已经存在，导入失败";
                 } else {
                     EquipmentInfo equipmentInfo = new EquipmentInfo();
                     equipmentInfo.setSno(info[0]);
                     equipmentInfo.setMac(info[1]);
+                    equipmentInfo.setName(info[2]);
                     equipmentInfo.setStatus(Byte.valueOf("0"));
                     equipmentInfo.setCreateTime(TimeStampUtil.getCurentTimeStamp10());
                     equipmentInfo.setUpdateTime(equipmentInfo.getCreateTime());

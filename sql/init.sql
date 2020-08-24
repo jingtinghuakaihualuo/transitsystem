@@ -2,6 +2,7 @@
 create table t_equipment_info(id int auto_increment primary key comment '表id',
 sno varchar(30) not null comment '设备编号',
 mac varchar(20) not null comment '设备mac地址',
+name varchar(40) default '' comment '设备名',
 token_id bigint default null comment '设备当前提供的连接id',
 status tinyint  default 0 comment '0:激活导入状态;1:连接状态;2:关闭状态;3:禁用状态',
 create_time bigint comment '记录创建时间',

@@ -3,7 +3,6 @@ package com.example.transitsystem.service.impl;
 import com.example.transitsystem.base.OpenApiResult;
 import com.example.transitsystem.base.ResultEnum;
 import com.example.transitsystem.base.SocketApiRequest;
-import com.example.transitsystem.base.SocketApiRespnose;
 import com.example.transitsystem.bean.EquipmentFlow;
 import com.example.transitsystem.bean.EquipmentFlowExample;
 import com.example.transitsystem.bean.EquipmentInfo;

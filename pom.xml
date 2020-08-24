@@ -109,7 +109,7 @@
 
             <!--mybatis自动生成实体类和mapping文件-->
             <!--打包需设定config中驱动jar包为绝对路径。方便使用可以注释-->
-            <!--<plugin>
+<!--            <plugin>
                 <groupId>org.mybatis.generator</groupId>
                 <artifactId>mybatis-generator-maven-plugin</artifactId>
                 <version>1.3.2</version>
