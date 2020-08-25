@@ -5,6 +5,7 @@ import org.springframework.util.StringUtils;
 public class EquipmentInfoRequest {
     String sno;
     String mac;
+    String name;
     String tokenId;
 
     public String getSno() {
@@ -31,6 +32,14 @@ public class EquipmentInfoRequest {
         this.tokenId = tokenId;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public boolean checkParam() {
         if(!StringUtils.isEmpty(getTokenId()) || (!StringUtils.isEmpty(getSno()) && !StringUtils.isEmpty(getMac()))) {
             return true;
@@ -43,7 +52,8 @@ public class EquipmentInfoRequest {
         return "EquipmentInfoRequest{" +
                 "sno='" + sno + '\'' +
                 ", mac='" + mac + '\'' +
-                ", tokenId=" + tokenId +
+                ", name='" + name + '\'' +
+                ", tokenId='" + tokenId + '\'' +
                 '}';
     }
 }
