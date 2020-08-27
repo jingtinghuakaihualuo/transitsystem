@@ -2,6 +2,7 @@ package com.example.transitsystem.service.impl;
 
 import com.example.transitsystem.base.OpenApiResult;
 import com.example.transitsystem.base.ResultEnum;
+import com.example.transitsystem.base.SocketApiRequest;
 import com.example.transitsystem.base.SocketApiRespnose;
 import com.example.transitsystem.bean.EquipmentInfo;
 import com.example.transitsystem.bean.EquipmentInfoExample;
@@ -28,6 +29,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Random;
 
 @Slf4j
 @Service
@@ -63,8 +65,49 @@ public class EquipmnetManagerServiceImpl implements EquipmentManagerService {
                 return new OpenApiResult(ResultEnum.DATABASEERROR);
             }
 
+            EquipmentInfo equipmentInfo = list.get(0);
+            ClientSocket clientSocket = null;
+            if (equipmentInfo.getTokenId() != null) {
+                clientSocket = DelongServerSocket.tokenMappingclient.get(equipmentInfo.getTokenId());
+            }
+
+            if (clientSocket == null) {
+                Integer reqNo = new Random().nextInt(Integer.MAX_VALUE);
+                //发送数据
+                SocketApiRequest socketApiRequest = new SocketApiRequest();
+                socketApiRequest.setApi("notify");
+                socketApiRequest.setReqNo(reqNo);
+                socketApiRequest.setReqDate(System.currentTimeMillis()/1000);
+                socketApiRequest.setData("notify");
+
+                clientSocket.send(gson.toJson(socketApiRequest));
+                //等待响应
+                SocketApiRespnose socketApiRespnose = new SocketApiRespnose();
+                clientSocket.getMessage().put(reqNo, socketApiRespnose);
+
+                synchronized (socketApiRespnose) {
+                    try {
+                        socketApiRespnose.wait(10000);
+
+                        socketApiRespnose = clientSocket.getMessage().get(reqNo);
+                    } catch (InterruptedException e) {
+                        log.error("wait error, e={}", e);
+                    } finally {
+                        clientSocket.getMessage().remove(reqNo);
+                    }
+                }
+
+                if (clientSocket.getMessage().get(reqNo).getRespNo() == null) {
+                    equipmentInfo.setStatus(Byte.valueOf("2"));
+                }
+            } else {
+                if (equipmentInfo.getStatus() > Byte.valueOf("0")) {
+                    equipmentInfo.setStatus(Byte.valueOf("2"));
+                }
+            }
+
             result = new OpenApiResult(ResultEnum.SUCCESS);
-            result.setData(list.get(0));
+            result.setData(equipmentInfo);
 
         } catch (NumberFormatException e) {
             log.error("EquipmnetManagerServiceImpl:getEquipmentInfo(), NumberFormatException={}", e);
