@@ -157,13 +157,13 @@ public class EquipmnetManagerServiceImpl implements EquipmentManagerService {
         }
 
         if (list.size() == 0) {
-            SocketApiRespnose socketApiRespnose = new SocketApiRespnose(ResultEnum.EQUIPMENTNOTEXIST, reqNo);
+            SocketApiRespnose socketApiRespnose = new SocketApiRespnose(ResultEnum.EQUIPMENTNOTEXIST,"/register", reqNo);
             return gson.toJson(socketApiRespnose);
         }
 
         if (list.size() > 1) {
             log.info("request param error.");
-            SocketApiRespnose socketApiRespnose = new SocketApiRespnose(ResultEnum.DATABASEERROR, reqNo);
+            SocketApiRespnose socketApiRespnose = new SocketApiRespnose(ResultEnum.DATABASEERROR, "/register", reqNo);
             return gson.toJson(socketApiRespnose);
         }
 
@@ -175,7 +175,7 @@ public class EquipmnetManagerServiceImpl implements EquipmentManagerService {
         cleanOldClient(clientSocket, equipmentInfo);
         Long newTokenId = updateToken(clientSocket, equipmentInfo);
         retJsonObject.addProperty("tokenId", String.valueOf(newTokenId));
-        SocketApiRespnose socketApiRespnose = new SocketApiRespnose(ResultEnum.SUCCESS, reqNo);
+        SocketApiRespnose socketApiRespnose = new SocketApiRespnose(ResultEnum.SUCCESS, "/register", reqNo);
         socketApiRespnose.setData(retJsonObject);
         //修改状态
         equipmentInfo.setStatus(Byte.valueOf("1"));

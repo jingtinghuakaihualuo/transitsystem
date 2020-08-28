@@ -259,20 +259,25 @@ public class ClientSocket implements Runnable {
             JsonElement api = jsonObject.get("api");
             //请求数据
             if(api == null) {
-                Integer respNo = jsonObject.get("respNo").getAsInt();
-                if (respNo != null) {
-                    SocketApiRespnose socketApiRespnose = message.get(respNo);
-                    synchronized (socketApiRespnose) {
-                        message.put(respNo, gson.fromJson(reqStr, SocketApiRespnose.class));
-                        socketApiRespnose.notify();
-                    }
-                }
+
             } else {
                 String apiStr = api.getAsString();
                 //客户端发起请求
                 switch (apiStr) {
-                    case "/register":
+                    case "/register" :
                         retStr = equipmentManagerService.register(this, reqStr);
+                        break;
+                    case "notify" :
+                        Integer respNo = jsonObject.get("respNo").getAsInt();
+                        if (respNo != null) {
+                            SocketApiRespnose socketApiRespnose = message.get(respNo);
+                            if (socketApiRespnose != null) {
+                                synchronized (socketApiRespnose) {
+                                    message.put(respNo, gson.fromJson(reqStr, SocketApiRespnose.class));
+                                    socketApiRespnose.notify();
+                                }
+                            }
+                        }
                         break;
                     default:
                         break;

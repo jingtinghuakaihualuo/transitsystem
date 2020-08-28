@@ -1,6 +1,7 @@
 package com.example.transitsystem.base;
 
 public class SocketApiRespnose {
+    private String api;
     private String code;
     private String msg;
     private Integer respNo;
@@ -11,11 +12,12 @@ public class SocketApiRespnose {
         this.respDate = System.currentTimeMillis();
     }
 
-    public SocketApiRespnose(ResultEnum resultEnum,Integer respNo) {
+    public SocketApiRespnose(ResultEnum resultEnum,String api,Integer respNo) {
         this.code = resultEnum.getCode();
         this.msg = resultEnum.getMsg();
         this.respNo = respNo;
         this.respDate = System.currentTimeMillis();
+        this.api = api;
     }
 
     public String getCode() {

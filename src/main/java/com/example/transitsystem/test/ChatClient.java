@@ -18,6 +18,7 @@ public class ChatClient {
 
     public static void main(String[] args) throws Exception {
 
+//        String host = "139.199.189.158";
 //        String host = "120.79.11.80";
         String host = "127.0.0.1";
         double a = 1.0;
@@ -110,10 +111,12 @@ public class ChatClient {
                                 //test return
 //                    String s = "{\"code\" : \"0000\", \"msg\" : \"success!\", \"respNo\" : 100}";
                                 SocketApiRequest request = gson.fromJson(sb.toString(), SocketApiRequest.class);
-                                SocketApiRespnose respnose = new SocketApiRespnose(ResultEnum.SUCCESS, request.getReqNo()== null ? 100 : request.getReqNo());
-                                String retStr = gson.toJson(respnose);
-                                System.out.println("##########retString !!!!!!!!!!!!!!!!!!!! " + retStr);
-                                outputStream.write(SocketPachageUtil.builderSendBytes(retStr));
+                                if ("notify".equalsIgnoreCase(request.getApi())) {
+                                    SocketApiRespnose respnose = new SocketApiRespnose(ResultEnum.SUCCESS, request.getApi(), request.getReqNo()== null ? 100 : request.getReqNo());
+                                    String retStr = gson.toJson(respnose);
+                                    System.out.println("##########retString !!!!!!!!!!!!!!!!!!!! " + retStr);
+                                    outputStream.write(SocketPachageUtil.builderSendBytes(retStr));
+                                }
                             } finally {
                                 //重置数据
                                 index = 0;
