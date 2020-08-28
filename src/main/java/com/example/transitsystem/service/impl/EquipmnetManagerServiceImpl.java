@@ -71,7 +71,7 @@ public class EquipmnetManagerServiceImpl implements EquipmentManagerService {
                 clientSocket = DelongServerSocket.tokenMappingclient.get(equipmentInfo.getTokenId());
             }
 
-            if (clientSocket == null) {
+            if (clientSocket != null) {
                 Integer reqNo = new Random().nextInt(Integer.MAX_VALUE);
                 //发送数据
                 SocketApiRequest socketApiRequest = new SocketApiRequest();
@@ -97,7 +97,7 @@ public class EquipmnetManagerServiceImpl implements EquipmentManagerService {
                     }
                 }
 
-                if (clientSocket.getMessage().get(reqNo).getRespNo() == null) {
+                if (socketApiRespnose.getRespNo() == null) {
                     equipmentInfo.setStatus(Byte.valueOf("2"));
                 }
             } else {

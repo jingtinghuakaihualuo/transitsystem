@@ -1,6 +1,9 @@
 package com.example.transitsystem.test;
 
 
+import com.example.transitsystem.base.ResultEnum;
+import com.example.transitsystem.base.SocketApiRequest;
+import com.example.transitsystem.base.SocketApiRespnose;
 import com.example.transitsystem.utils.SocketPachageUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -15,8 +18,8 @@ public class ChatClient {
 
     public static void main(String[] args) throws Exception {
 
-        String host = "120.79.11.80";
-//        String host = "127.0.0.1";
+//        String host = "120.79.11.80";
+        String host = "127.0.0.1";
         double a = 1.0;
         int port = 10086;
         // 与服务端建立连接
@@ -33,8 +36,9 @@ public class ChatClient {
                 "\t\"reqNo\" : 100,\n" +
                 "\t\"reqDate\" : 1234567890,\n" +
                 "\t\"data\" : {\n" +
-                "\t\t\"sno\" : \"1110000103111203051007\",\n" +
-                "\t\t\"mac\" : \"c4:3a:35:f8:06:98\"\n" +
+                "\t\t\"sno\" : \"123456789\",\n" +
+                "\t\t\"mac\" : \"AA-BB-CC-DD\",\n" +
+                "\t\t\"name\" : \"test\"\n" +
                 "\t}\n" +
                 "}";
 
@@ -105,10 +109,11 @@ public class ChatClient {
                                 //处理数据部分start
                                 //test return
 //                    String s = "{\"code\" : \"0000\", \"msg\" : \"success!\", \"respNo\" : 100}";
-//                                SocketApiRequest request = gson.fromJson(sb.toString(), SocketApiRequest.class);
-//                                SocketApiRespnose respnose = new SocketApiRespnose(ResultEnum.SUCCESS, request.getReqNo()== null ? 100 : request.getReqNo());
-//                                String retStr = gson.toJson(respnose);
-//                                outputStream.write(SocketPachageUtil.builderSendBytes(retStr));
+                                SocketApiRequest request = gson.fromJson(sb.toString(), SocketApiRequest.class);
+                                SocketApiRespnose respnose = new SocketApiRespnose(ResultEnum.SUCCESS, request.getReqNo()== null ? 100 : request.getReqNo());
+                                String retStr = gson.toJson(respnose);
+                                System.out.println("##########retString !!!!!!!!!!!!!!!!!!!! " + retStr);
+                                outputStream.write(SocketPachageUtil.builderSendBytes(retStr));
                             } finally {
                                 //重置数据
                                 index = 0;
