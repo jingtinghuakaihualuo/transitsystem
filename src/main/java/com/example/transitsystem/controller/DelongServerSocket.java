@@ -40,10 +40,10 @@ public class DelongServerSocket {
         try {
             ss = new ServerSocket(port == null ? this.port : port);
             started = true;
-            System.out.println("端口已开启,占用10086端口号....");
+            log.info("端口已开启,占用10086端口号....");
         } catch (Exception e) {
-            System.out.println("端口使用中....");
-            System.out.println("请关掉相关程序并重新运行服务器！");
+            log.info("端口使用中....");
+            log.info("请关掉相关程序并重新运行服务器！");
             e.printStackTrace();
             System.exit(0);
         }
@@ -54,7 +54,7 @@ public class DelongServerSocket {
                 socket.setKeepAlive(true);
                 log.info("socket == null ? =" + (socket == null));
                 ClientSocket register = ClientSocket.register(socket);
-                System.out.println("a client connected!");
+                log.info("a client connected!");
                 if (register != null) {
                     executorService.submit(register);
                 }
