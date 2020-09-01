@@ -243,7 +243,7 @@ public class EquipmnetManagerServiceImpl implements EquipmentManagerService {
         if (sno != null) {
             criteria.andSnoEqualTo(sno);
         }
-        example.setOrderByClause("id desc");
+        example.setOrderByClause("status, id desc");
         List<EquipmentInfo> list = infoMapper.selectByExample(example);
         return list;
     }
