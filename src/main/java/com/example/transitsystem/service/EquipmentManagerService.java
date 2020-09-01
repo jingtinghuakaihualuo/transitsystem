@@ -17,7 +17,7 @@ public interface EquipmentManagerService {
 
     String register(ClientSocket clientSocket, String info);
 
-    Long updateToken(ClientSocket clientSocket, EquipmentInfo equipmentInfo);
+    Long updateToken(ClientSocket clientSocket, EquipmentInfo equipmentInfo, String name);
 
     List<EquipmentInfo> getEquipmentInfoList(String sno);
 

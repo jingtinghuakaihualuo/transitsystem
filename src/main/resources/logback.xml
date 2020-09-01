@@ -29,11 +29,11 @@
     </appender>
 
     <!-- 系统模块日志级别控制  -->
-    <logger name="com.example.transitsystem" level="debug" />
+    <logger name="com.example.transitsystem" level="info" />
     <!-- Spring日志级别控制  -->
     <logger name="org.springframework" level="warn" />
 
-    <root level="debug">
+    <root level="info">
         <appender-ref ref="console" />
         <appender-ref ref="sys-user" />
     </root>

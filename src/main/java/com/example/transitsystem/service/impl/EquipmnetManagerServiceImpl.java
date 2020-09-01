@@ -173,7 +173,7 @@ public class EquipmnetManagerServiceImpl implements EquipmentManagerService {
 
         //考虑到设备已经注册
         cleanOldClient(clientSocket, equipmentInfo);
-        Long newTokenId = updateToken(clientSocket, equipmentInfo);
+        Long newTokenId = updateToken(clientSocket, equipmentInfo, request.getName());
         retJsonObject.addProperty("tokenId", String.valueOf(newTokenId));
         SocketApiRespnose socketApiRespnose = new SocketApiRespnose(ResultEnum.SUCCESS, "/register", reqNo);
         socketApiRespnose.setData(retJsonObject);
@@ -184,12 +184,16 @@ public class EquipmnetManagerServiceImpl implements EquipmentManagerService {
     }
 
     @Override
-    public Long updateToken(ClientSocket clientSocket, EquipmentInfo equipmentInfo) {
+    public Long updateToken(ClientSocket clientSocket, EquipmentInfo equipmentInfo, String name) {
 
         if (equipmentInfo.getTokenId() == null || tokenMoreThanThreeDay(equipmentInfo)) {
             Long oldTokenId = equipmentInfo.getTokenId();
             String newTokenId = String.valueOf(System.currentTimeMillis()).substring(4, 10) + autoGenericCode(String.valueOf(equipmentInfo.getId()), 6);
             equipmentInfo.setTokenId(Long.valueOf(newTokenId));
+            //更新名字
+            if (name != null && !equipmentInfo.getName().equals(name)) {
+                equipmentInfo.setName(name);
+            }
             equipmentInfo.setUpdateTime(TimeStampUtil.getCurentTimeStamp10());
             if (oldTokenId == null) {
                 equipmentInfo.setStatus(Byte.valueOf("1"));
@@ -203,7 +207,12 @@ public class EquipmnetManagerServiceImpl implements EquipmentManagerService {
             DelongServerSocket.tokenMappingclient.put(Long.valueOf(newTokenId), clientSocket);
             DelongServerSocket.clientMappingToken.put(clientSocket, Long.valueOf(newTokenId));
             return Long.valueOf(newTokenId);
+        } else if (name != null && !equipmentInfo.getName().equals(name)) {
+            //更新名字
+            equipmentInfo.setName(name);
+            infoMapper.updateByPrimaryKey(equipmentInfo);
         }
+
 
         return equipmentInfo.getTokenId();
     }

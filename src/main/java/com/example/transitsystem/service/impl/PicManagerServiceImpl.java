@@ -81,7 +81,7 @@ public class PicManagerServiceImpl implements PicManagerService {
             return new OpenApiResult(ResultEnum.NOTONLINE);
         }
 
-        equipmentManagerService.updateToken(clientSocket, equipmentInfo);
+        equipmentManagerService.updateToken(clientSocket, equipmentInfo, null);
 
 
         //因为多线程操作MultipartFile的时候临时文件可能关闭，所以需要将文件写入服务器。由服务器多线程操作读写
